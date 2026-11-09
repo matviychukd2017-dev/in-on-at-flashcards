@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Прийменники in / on / at — картки</title>
+<style>
+:root{--bg:#fbeedd;--bg2:#f6d9b5;--card:#fffaf2;--ink:#3b2416;--mute:#8a6a52;--acc:#d9531e;--acc2:#e9a23b;--ok:#4f7a35;--bad:#b23a2a;--back:#7a2e12;--backink:#fff3e2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#2a1a10;--bg2:#3a2214;--card:#46291a;--ink:#fbe8d0;--mute:#d2a984;--acc:#f07a3c;--acc2:#f0b24f;--ok:#9fd27a;--bad:#ff8f7e;--back:#8a3513;--backink:#fff3e2}}
+:root[data-theme="dark"]{--bg:#2a1a10;--bg2:#3a2214;--card:#46291a;--ink:#fbe8d0;--mute:#d2a984;--acc:#f07a3c;--acc2:#f0b24f;--ok:#9fd27a;--bad:#ff8f7e;--back:#8a3513;--backink:#fff3e2}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:linear-gradient(160deg,var(--bg),var(--bg2));color:var(--ink);font-family:"Nunito","Trebuchet MS",system-ui,sans-serif;min-height:100vh;overflow-x:hidden}
+.leaf{position:fixed;top:-40px;font-size:26px;opacity:.55;animation:fall linear infinite;pointer-events:none;z-index:0}
+@keyframes fall{to{transform:translateY(112vh) rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.leaf{display:none}}
+main{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:22px 16px 40px;text-align:center}
+h1{font-family:Georgia,"Times New Roman",serif;font-size:28px;margin:6px 0 4px;color:var(--acc)}
+.sub{color:var(--mute);font-size:15px;margin:0 0 16px}
+.bar{height:10px;background:rgba(138,106,82,.25);border-radius:9px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc2),var(--acc));transition:width .3s}
+.meta{display:flex;justify-content:space-between;font-size:14px;color:var(--mute);margin:8px 2px 14px;font-weight:700}
+.scene{perspective:1200px;height:300px;cursor:pointer}
+.card{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d}
+.card.flip{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:22px;padding:24px 22px;display:flex;flex-direction:column;justify-content:center;box-shadow:0 10px 26px rgba(90,40,10,.22);overflow:auto}
+.front{background:var(--card);border:3px dashed var(--acc2)}
+.back{background:var(--back);color:var(--backink);transform:rotateY(180deg)}
+.num{position:absolute;top:12px;left:16px;font-weight:800;color:var(--acc);font-size:14px}
+.back .num{color:var(--acc2)}
+.txt{font-size:19px;line-height:1.55;font-family:Georgia,serif}
+.gap{display:inline-block;min-width:54px;border-bottom:3px solid var(--acc);margin:0 2px}
+.ans{background:var(--acc2);color:#3b2416;padding:1px 8px;border-radius:8px;font-weight:800}
+.hint{position:absolute;bottom:10px;left:0;right:0;font-size:12px;color:var(--mute)}
+.back .hint{color:#f3c9a0}
+.row{display:flex;gap:10px;margin-top:16px;justify-content:center;flex-wrap:wrap}
+button{font:inherit;font-weight:800;border:0;border-radius:14px;padding:12px 18px;cursor:pointer;color:#fff;background:var(--acc);box-shadow:0 4px 0 rgba(0,0,0,.18)}
+button:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.18)}
+button.ghost{background:var(--card);color:var(--ink);border:2px solid var(--acc2)}
+button.ok{background:var(--ok)}button.bad{background:var(--bad)}
+button[disabled]{opacity:.4;pointer-events:none}
+.res{background:var(--card);border-radius:22px;padding:28px 20px;box-shadow:0 10px 26px rgba(90,40,10,.22)}
+.res b{font-size:46px;color:var(--acc);display:block}
+.hide{display:none}
+</style>
+</head>
+<body>
+<main>
+  <div style="font-size:38px">🍂🍁🍂</div>
+  <h1>in · on · at</h1>
+  <p class="sub">Прочитай речення, згадай прийменник, переверни картку й перевір себе</p>
+  <div id="game">
+    <div class="bar"><i id="pb"></i></div>
+    <div class="meta"><span id="pos"></span><span>✓ <span id="okc">0</span> · ↻ <span id="badc">0</span></span></div>
+    <div class="scene" id="scene"><div class="card" id="card">
+      <div class="face front"><span class="num" id="n1"></span><div class="txt" id="q"></div><div class="hint">натисни, щоб перевернути</div></div>
+      <div class="face back"><span class="num" id="n2"></span><div class="txt" id="a"></div><div class="hint">натисни, щоб повернути</div></div>
+    </div></div>
+    <div class="row" id="judge"><button class="bad" id="bBad" disabled>Ще повторю ↻</button><button class="ok" id="bOk" disabled>Знаю ✓</button></div>
+    <div class="row"><button class="ghost" id="bPrev">← Назад</button><button class="ghost" id="bShuf">🔀 Перемішати</button><button class="ghost" id="bNext">Далі →</button></div>
+  </div>
+  <div id="end" class="hide"><div class="res"><div style="font-size:40px">🎃</div><b id="score"></b><p id="msg"></p>
+    <div class="row"><button id="bMiss">Повторити важкі</button><button class="ghost" id="bAll">Почати спочатку</button></div></div></div>
+</main>
+<script>
+var D=[
+["When Sarah was a child, she spent most of her summer holidays helping her grandparents ___ a farm in the countryside.","on"],
+["Although Mark enjoys his job, he often feels exhausted after spending eight hours ___ work every day.","at"],
+["The small village is located ___ the North of Scotland, surrounded by beautiful mountains and forests.","in"],
+["My older sister is currently studying medicine ___ university, and she hopes to become a surgeon.","at"],
+["During his trip to Italy, James decided to spend a few days ___ town rather than stay at a seaside resort.","in"],
+["The hotel is situated ___ the outskirts of the city, so visitors can enjoy a peaceful atmosphere away from the busy centre.","on"],
+["The small village where my grandparents live is located ___ the country, far away from large shopping centres and busy roads.","in"],
+["If you look carefully, you will find the information you need ___ the back of the document.","on"],
+["There was a long line of tourists waiting ___ the door of the famous museum when we arrived.","at"],
+["Many rare species of animals can be found ___ the mountains, where human activity is limited.","in"],
+["The driver was asked to stop ___ the crossroads because the traffic lights were not working.","at"],
+["We had to wait ___ a queue for almost forty minutes before we could buy our concert tickets.","in"],
+["Children usually learn how to work in teams and communicate with others ___ school.","at"],
+["My aunt lives ___ the suburbs, where houses are generally cheaper than in the city centre.","in"],
+["The paintings were displayed ___ a row along the walls of the exhibition hall.","in"],
+["The famous actor was born ___ Park Avenue in New York, where his family owned a large apartment.","on"],
+["After being found guilty of several crimes, the businessman spent three years ___ prison.","in"],
+["There is a small café ___ the right, just opposite the entrance to the shopping centre.","on"],
+["The hotel is located ___ an island, which can only be reached by boat.","on"],
+["My mother works ___ the hospital, where she helps patients recover after surgery.","at"],
+["When I entered the classroom, the teacher was standing ___ the corner, talking to one of the students.","in"],
+["The new student felt nervous when he was asked to introduce himself ___ front of the whole class.","in"],
+["The tourists decided to take a boat ride ___ the river to admire the historic buildings along its banks.","on"],
+["Homeless people often have to sleep ___ the streets, especially during the colder months of the year.","on"],
+["My grandfather had to stay ___ hospital for several days after suffering a serious injury.","in"],
+["I’ll meet you ___ the corner of Oxford Street and Baker Street at around six o’clock.","at"],
+["The police discovered a suspicious vehicle parked ___ front of the bank early on Monday morning.","in"],
+["While travelling through the countryside, we came across a beautiful house ___ the left side of the road.","on"],
+["The restaurant is located ___ the outskirts of town, but it is still easy to reach by public transport.","on"],
+["After graduating, Emily found a job ___ a hospital in London, where she now works as a nurse.","at"]
+].map(function(x,i){return{id:i+1,s:x[0],p:x[1]}});
+var deck=D.slice(),i=0,ok=0,bad=0,miss=[],judged=false;
+var $=function(id){return document.getElementById(id)};
+function show(){
+  var c=deck[i];judged=false;$('card').classList.remove('flip');
+  var parts=c.s.split('___');
+  $('q').innerHTML=parts[0]+'<span class="gap"></span>'+parts[1];
+  $('a').innerHTML=parts[0]+'<span class="ans">'+c.p+'</span>'+parts[1];
+  $('n1').textContent=$('n2').textContent='№ '+c.id;
+  $('pos').textContent='Картка '+(i+1)+' з '+deck.length;
+  $('pb').style.width=(i/deck.length*100)+'%';
+  $('okc').textContent=ok;$('badc').textContent=bad;
+  $('bOk').disabled=$('bBad').disabled=true;
+}
+function flip(){$('card').classList.toggle('flip');if($('card').classList.contains('flip')&&!judged){$('bOk').disabled=$('bBad').disabled=false}}
+function go(d){var n=i+d;if(n<0)return;if(n>=deck.length){finish();return}i=n;show()}
+function judge(good){if(judged)return;judged=true;if(good)ok++;else{bad++;miss.push(deck[i])}go(1)}
+function finish(){
+  $('game').classList.add('hide');$('end').classList.remove('hide');
+  $('score').textContent=ok+' / '+deck.length;
+  $('msg').textContent=bad?('Ще варто повторити: '+bad+'. Натисни «Повторити важкі»!'):'Бездоганно! Усі прийменники на місці 🍁';
+  $('bMiss').style.display=bad?'':'none';
+}
+function start(arr,shuf){
+  deck=arr.slice();
+  if(shuf)deck.sort(function(){return Math.random()-.5});
+  i=0;ok=0;bad=0;miss=[];
+  $('end').classList.add('hide');$('game').classList.remove('hide');show();
+}
+$('scene').onclick=flip;
+$('bOk').onclick=function(){judge(true)};
+$('bBad').onclick=function(){judge(false)};
+$('bNext').onclick=function(){go(1)};
+$('bPrev').onclick=function(){go(-1)};
+$('bShuf').onclick=function(){start(deck,true)};
+$('bAll').onclick=function(){start(D,false)};
+$('bMiss').onclick=function(){start(miss,true)};
+document.addEventListener('keydown',function(e){
+  if(e.key===' '){e.preventDefault();flip()}
+  else if(e.key==='ArrowRight')go(1);else if(e.key==='ArrowLeft')go(-1);
+});
+var L=['🍂','🍁','🍃','🍂','🍁','🍂'];
+L.forEach(function(ch,k){var s=document.createElement('span');s.className='leaf';s.textContent=ch;
+  s.style.left=(8+k*17)+'%';s.style.animationDuration=(11+k*2.3)+'s';s.style.animationDelay=(-k*3)+'s';document.body.appendChild(s)});
+show();
+</script>
+</body>
+</html>
